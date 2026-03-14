@@ -4,6 +4,66 @@
 
 ---
 
+## 零门槛烧录（推荐新手）
+
+如果你只想烧录固件、不想搭建编译环境，使用预编译 `.bin` + `flash.py` 脚本即可，**只需要 Python 3**。
+
+### 步骤
+
+**1. 下载固件**
+
+从仓库 [Releases](https://github.com/your-repo/releases) 页面下载最新固件压缩包，解压到项目 `firmware/` 目录：
+
+```
+firmware/
+├── bootloader.bin
+├── partitions.bin
+├── boot_app0.bin
+└── firmware.bin
+```
+
+**2. 安装依赖（仅首次）**
+
+```bash
+pip install esptool pyserial
+```
+
+**3. 运行烧录脚本**
+
+```bash
+python flash.py
+```
+
+脚本会自动：
+- 检测 ESP32-C3 串口
+- 检查 / 自动安装 `esptool`
+- 区分「完整烧录」（含 bootloader）和「仅更新固件」两种模式
+- 烧录完成后提示配网步骤
+
+> **如果自动检测串口失败**：打开设备管理器，找到 `USB JTAG/serial debug unit` 对应的 COM 口，手动输入。
+
+> **如果烧录失败**：按住 ESP32-C3 上的 `BOOT` 键，再次运行脚本。
+
+### 开发者：如何生成预编译固件
+
+用 VS Code + PlatformIO 插件编译后，从以下路径收集文件：
+
+```
+# 编译产物
+.pio/build/esp32-c3-supermini/firmware.bin      → firmware/firmware.bin
+.pio/build/esp32-c3-supermini/bootloader.bin    → firmware/bootloader.bin
+.pio/build/esp32-c3-supermini/partitions.bin    → firmware/partitions.bin
+
+# boot_app0.bin（框架自带，路径因系统而异）
+# Windows:
+%USERPROFILE%\.platformio\packages\framework-arduinoespressif32@*/
+    tools\partitions\boot_app0.bin              → firmware/boot_app0.bin
+```
+
+将这四个文件打包为 zip 发布到 GitHub Releases，用户即可通过 `flash.py` 一键烧录。
+
+---
+
 ## 总览：三条技术线
 
 ```

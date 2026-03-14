@@ -3,6 +3,11 @@
 .vscode/
 *.orig
 
+# 预编译固件目录：追踪 README 和发布的 .bin，排除本地编译产物
+# firmware/*.bin 由 CI 或开发者手动放入，需要追踪
+# 如果不想追踪 bin 文件，取消下一行注释
+# firmware/*.bin
+
 # Python
 __pycache__/
 *.py[cod]
