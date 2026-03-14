@@ -1,0 +1,23 @@
+{
+  "settings": {
+    "process_name": "GRAZE COUNTER.EXE",
+    "target_url": "http://127.0.0.1:5000/macros/0/run",
+    "method": "POST",
+    "timeout": 2,
+    "debounce_seconds": 0.5
+  },
+  "scan": {
+    "pattern": "8B ?? 08 8B ?? ?? ?? ?? ?? 83 ?? FF 89 ?? ?? ?? ?? ?? 89 ?? ?? ?? ?? ?? D9 05",
+    "offset_bytes": 9
+  },
+  "headers": {
+    "User-Agent": "Universal-Game-Hook/1.0",
+    "Content-Type": "application/json"
+  },
+  "payload": {
+    "info": "This is a custom payload",
+    "game_event": "hp_decrease",
+    "value": "$VAL", 
+    "timestamp": "$TIME"
+  }
+}

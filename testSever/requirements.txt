@@ -1,0 +1,5 @@
+# ESP32 STG Shocker - Server dependencies
+aiohttp>=3.9.0
+frida>=16.0.0
+requests>=2.31.0
+

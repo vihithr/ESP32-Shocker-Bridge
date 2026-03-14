@@ -1,0 +1,38 @@
+# PlatformIO
+.pio/
+.vscode/
+*.orig
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.env
+
+# 用户运行时数据（宏存储，含用户配置，不应纳入版本控制）
+testSever/macros_storage.json
+server/macros_storage.json
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 个人记录 / 草稿（不适合公开仓库的私人内容）
+Record_raw.md
+Record_raw_sub.md
+
+# 编辑器
+*.swp
+*.swo
+.idea/
+*.suo
+*.user
