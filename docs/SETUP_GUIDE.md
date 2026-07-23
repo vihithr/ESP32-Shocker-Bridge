@@ -32,7 +32,7 @@ Test_elec_Release_v1.0/
 
 **1. 下载固件**
 
-从仓库 [Releases](https://github.com/your-repo/releases) 页面下载最新固件压缩包，解压到项目 `firmware/` 目录：
+从仓库 [Releases](https://github.com/vihithr/ESP32-Shocker-Bridge/releases) 页面下载最新固件压缩包，解压到项目 `firmware/` 目录：
 
 ```
 firmware/
