@@ -1,5 +1,8 @@
 # ESP32 STG Shocker - Server dependencies
 aiohttp>=3.9.0
 frida>=16.0.0
+frida-tools>=12.0.0
 requests>=2.31.0
+psutil>=5.9.0       # hook_gui.py 进程选择器
+pyserial>=3.5       # esp32_flasher.py / ESP32_Flasher.exe 串口监视器
 

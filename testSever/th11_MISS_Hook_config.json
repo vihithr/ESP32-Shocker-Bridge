@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "process_name": "th11.exe",
+    "target_url": "http://127.0.0.1:5000/macros/0/run",
+    "method": "POST",
+    "timeout": 2,
+    "debounce_seconds": 1.0
+  },
+  "scan": {
+    "pattern": "89 15 18574A00",
+    "func_entry_offset": 0,
+    "read_type": "byte"
+  },
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "payload": {
+    "event": "miss",
+    "game": "th11",
+    "value": "$VAL"
+  }
+}

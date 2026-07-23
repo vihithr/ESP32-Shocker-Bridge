@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "process_name": "東方紅魔郷.exe",
+    "target_url": "http://127.0.0.1:5000/macros/0/run",
+    "method": "POST",
+    "timeout": 2,
+    "debounce_seconds": 0.1
+  },
+  "scan": {
+    "pattern": "0FBE15 BAD46900 85D2 7F09",
+    "func_entry_offset": 0,
+    "read_type": "byte"
+  },
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "payload": {
+    "event": "miss",
+    "game": "th06",
+    "value": "$VAL"
+  }
+}

@@ -6,7 +6,27 @@
 
 ## 零门槛烧录（推荐新手）
 
-如果你只想烧录固件、不想搭建编译环境，使用预编译 `.bin` + `flash.py` 脚本即可，**只需要 Python 3**。
+如果你只想烧录固件、不想搭建编译环境，使用预编译 `.bin` + GUI 上位机或 `flash.py` 脚本即可，**只需要 Python 3**。
+
+### 方式 A：使用 GUI 上位机（最简单）
+
+从 GitHub Releases 下载 `Test_elec_Release_v1.0.zip`，解压后双击 `ESP32_Flasher_v1.0/ESP32_Flasher.exe`，**完全免安装**（已自带 esptool + PyInstaller 打包的 Python）：
+
+```text
+Test_elec_Release_v1.0/
+└── ESP32_Flasher_v1.0/
+    ├── ESP32_Flasher.exe                ← 双击运行
+    ├── README.md
+    └── firmware/                        ← 自带 4 段固件
+        ├── bootloader.bin   (0x0)
+        ├── partitions.bin   (0x8000)
+        ├── boot_app0.bin    (0xe000)
+        └── firmware.bin     (0x10000)
+```
+
+操作步骤：选串口 → 确认 `✓ firmware.bin · 4 段分段烧录` → 勾选「烧录前先擦除 Flash」→ 点「开始烧录」→ 等 ~5 秒完成。
+
+### 方式 B：使用 flash.py 命令行
 
 ### 步骤
 
@@ -168,7 +188,10 @@ pip install -r requirements.txt
 |----|------|
 | `aiohttp` | 异步 HTTP 服务框架，提供 API 和 Web UI |
 | `frida` | 游戏内存 Hook（线路 C 需要，线路 B 不强制） |
+| `frida-tools` | Frida 辅助工具（GUI 依赖） |
 | `requests` | Hook 脚本向本地服务发送 HTTP 请求 |
+| `psutil` | Hook GUI 进程选择器 |
+| `pyserial` | 烧录 GUI 串口监视器 / esptool |
 
 > 如果只用线路 B（不做 Hook），可以只安装 `aiohttp`：`pip install aiohttp`
 
@@ -241,16 +264,20 @@ curl -X POST http://127.0.0.1:5000/macros/0/run
 
 ---
 
-## 线路 C：游戏 Hook（STGB 引擎示例）
+## 线路 C：游戏 Hook（推荐用 GUI 上位机）
 
 > 依赖线路 A + B 已完成，宏 #0 已配置好电击序列。
 
 ### 前置条件
 - Windows（Frida 在 Windows 上对用户态进程注入最稳定）
 - 目标游戏已运行
-- 以**管理员权限**运行 Python 脚本（Frida attach 需要较高权限）
+- 以**管理员权限**运行 HookGUI（Frida attach 需要较高权限）
 
-### C-1 安装 Frida
+### C-1 安装 Frida（仅源码运行需要）
+
+如果你打算直接用 Release 里的 `HookGUI.exe`，**跳过此步**——EXE 已自带 Frida。
+
+源码运行 / 重新打包时：
 
 ```bash
 pip install frida frida-tools
@@ -284,6 +311,14 @@ frida --version
 }
 ```
 
+仓库已附带 3 份示例配置，可直接加载使用：
+
+| 配置文件 | 适用 |
+|----------|------|
+| `Universal_STGB_HP_Hook_config.json` | 通用 STGB 引擎（特征码扫描） |
+| `th11_MISS_Hook_config.json` | 东方 STGB 引擎（Touhou 11 及类似作品） |
+| `th06_EoSD_MISS_Hook_config.json` | 东方红魔乡 (Touhou 6) |
+
 **如何为其他游戏获取特征码（使用 Cheat Engine）：**
 
 1. 运行游戏，用 Cheat Engine 附加进程
@@ -294,38 +329,54 @@ frida --version
 6. 向上下各取约 10 字节，将不确定的字节替换为 `??`，构成特征码
 7. 记录「特征码起始位置」到「目标指令」的字节偏移，填入 `offset_bytes`
 
-### C-3 运行 Hook
+### C-3 启动 Hook GUI
+
+从 Releases 下载 `HookGUI_v1.0/HookGUI.exe` 双击即可，**免安装**。
+
+或从源码运行：
 
 ```bash
-# 确保游戏已运行，以管理员权限执行
-python testSever/Universal_STGB_HP_Hook.py
+cd testSever
+pip install psutil
+python hook_gui.py
 ```
 
-输出示例：
+GUI 启动后：
+
+1. 切到「Hook 配置」页签
+2. 点「加载配置」选 `th06_EoSD_MISS_Hook_config.json`（或其他）
+3. 点「选择…」选游戏进程（如 `th11.exe`）
+4. 点「▶ 启动 Hook」
+
+启动后日志类似：
 
 ```
 ==========================================
- Universal Game Trigger v1.0
- Target: GAME.EXE
+ Hook 已附加到进程: th11.exe
+ 模式: 特征码扫描 + 函数入口 Hook
+ 实际 Pattern: '89 15 18574A00'
+ [JS] 特征匹配: 0x12345678
+ [JS] 提取全局地址: 0x4E7450
+ [JS] 校验通过: push ebp (函数头确认)
+ [JS] Hook 已就绪 -> 0x12345670 (函数入口模式)
 ==========================================
-
-[*] 进程挂载成功
-[*] 扫描模块特征码...
-[+] 特征匹配成功: 0x12345678
-[*] Hook 注入点: 0x12345681
-[!] 自动识别寄存器: eax
-[+] 监听服务已就绪 (eax)
-[*] 引擎运行中... (Ctrl+C 停止)
 ```
 
 游戏发生 Miss 时：
 
 ```
-[Event] Capture Value: 2
-   >>> Triggering Webhook: http://127.0.0.1:5000/macros/0/run
+[EVENT] capture = 3
+[NET] POST http://127.0.0.1:5000/macros/0/run OK  payload={'event': 'miss', 'value': 3}
 ```
 
 同时本地服务会转发给 ESP32，触发宏脚本，光耦导通，理疗仪产生电击。
+
+GUI 还支持：
+- 嵌入式 testSever（同一 GUI 内启动 aiohttp + monitor_task）
+- 宏可视化编辑（直接写入 ESP32 NVS）
+- 进程列表选择（不用手敲 exe 名）
+
+详细见 `testSever/HOOK_GUI_README.md`。
 
 ---
 
