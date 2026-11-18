@@ -18,6 +18,8 @@
 > 5. 错误使用可能导致**严重伤害甚至死亡**，开发者不对任何误用后果负责
 >
 > 使用本项目即表示你已阅读并同意 [LICENSE](LICENSE) 中的责任豁免条款。
+>
+> **Not a medical device.** This project is not intended for therapy, pain relief, or any medical use. Use a certified TENS unit, start at the lowest intensity, and never place electrodes on the chest, head, or neck. Stop immediately if you feel pain.
 
 ---
 
